@@ -452,7 +452,10 @@ export const compileTSWithWhitespace = (
   })
 }
 
-compileTSWithWhitespace(
-  path.join(__dirname, "..", "examples"),
-  path.join(__dirname, "..", "./tsconfig.json")
-)
+const args = process.argv.slice(2)
+
+compileTSWithWhitespace(path.resolve(args[1]), path.resolve(args[2]))
+// compileTSWithWhitespace(
+//   path.join(__dirname, "..", "examples"),
+//   path.join(__dirname, "..", "./tsconfig.json")
+// )
