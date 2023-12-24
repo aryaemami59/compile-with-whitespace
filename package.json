@@ -2,7 +2,9 @@
   "name": "compile-with-whitespace",
   "version": "1.0.0",
   "description": "A tool that allows you to compile TypeScript to JavaScript while maintaining whitespace",
-  "bin": "dist/index.cjs",
+  "bin": {
+    "compileTSWithWhitespace": "./dist/index.cjs"
+  },
   "repository": "https://github.com/aryaemami59/compile-with-whitespace",
   "homepage": "https://github.com/aryaemami59/compile-with-whitespace#readme",
   "main": "./dist/index.cjs",
@@ -28,7 +30,8 @@
   "scripts": {
     "test": "ts-node src/compileExamples.ts examples",
     "build": "tsup",
-    "start": "ts-node --log-error src/compileExamples.ts"
+    "start": "npx compileTSWithWhitespace examples tsconfig.json",
+    "clean": "rimraf -g \"examples/**/*.js\" \"examples/dist\""
   },
   "keywords": [
     "compile",
