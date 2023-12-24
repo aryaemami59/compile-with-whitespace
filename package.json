@@ -1,12 +1,38 @@
 {
   "name": "compile-with-whitespace",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A tool that allows you to compile TypeScript to JavaScript while maintaining whitespace",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "default": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "compile",
+    "whitespace",
+    "typescript",
+    "javascript",
+    "ts",
+    "js"
+  ],
   "author": "Arya Emami <aryaemami59@yahoo.com> (https://github.com/aryaemami59)",
   "license": "ISC",
   "devDependencies": {
