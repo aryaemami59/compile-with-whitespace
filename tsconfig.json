@@ -1,26 +1,26 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "allowUnusedLabels": true,
-    "alwaysStrict": false,
-    "baseUrl": ".",
-    "checkJs": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
     "jsx": "preserve",
+    "lib": ["DOM"],
+    "moduleResolution": "Bundler",
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "noErrorTruncation": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "outDir": "dist",
-    "removeComments": false,
-    "skipLibCheck": true,
-    "strict": true,
     "target": "ESNext",
-    "types": ["vitest/globals"]
+    "types": ["node"],
+    "baseUrl": ".",
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "tsup.config.ts",
+    "node_modules",
+    "dist",
+    "vitest.config.ts",
+    "examples"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
   }
 }

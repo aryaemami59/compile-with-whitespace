@@ -2,28 +2,14 @@
   "name": "compile-with-whitespace",
   "version": "1.0.0",
   "description": "A tool that allows you to compile TypeScript to JavaScript while maintaining whitespace",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "import": {
-        "default": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
-    }
-  },
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-node src/compileExamples.ts examples",
+    "build": "tsup",
+    "start": "ts-node --log-error src/compileExamples.ts"
   },
   "keywords": [
     "compile",
@@ -43,6 +29,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.1.1",
+    "reselect": "^5.0.1",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",

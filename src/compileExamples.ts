@@ -4,19 +4,19 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
-  writeFileSync
-} from 'node:fs'
-import path from 'node:path'
-import ts from 'typescript'
+  writeFileSync,
+} from "node:fs"
+import path from "node:path"
+import ts from "typescript"
 
 // This is a modified version of the functionality provided by https://github.com/CarabusX/gulp-preserve-typescript-whitespace
 // It has been modified and simplified to work with ts-node instead of gulp.
 
 const preferredTags = {
-  NEW_LINE_TAG: ['N', 'n'],
-  SPACES_TAG: ['S', 's'],
-  SPACES_BEFORE_COLON_TAG: ['C', 'c'],
-  SAME_LINE_ELSE_TAG: ['E', 'e']
+  NEW_LINE_TAG: ["N", "n"],
+  SPACES_TAG: ["S", "s"],
+  SPACES_BEFORE_COLON_TAG: ["C", "c"],
+  SAME_LINE_ELSE_TAG: ["E", "e"],
 }
 
 type PreferredTags = typeof preferredTags
@@ -41,8 +41,8 @@ interface Metadata extends Record<keyof PreferredTags, string> {
 
 class ParsedFileMetadata {
   public static FILE_METADATA_TAG: string
-  public startIndex: number
-  public endIndex: number
+  public declare startIndex: number
+  public declare endIndex: number
 
   constructor(public metadata: Metadata) {}
 
@@ -89,6 +89,9 @@ const restoreWhitespace = (contents: string) => {
   const metadataObj = ParsedFileMetadata.deserialize(contents)
 
   const { metadata } = metadataObj
+  if (metadata == null) {
+    return
+  }
   contents = metadataObj.removeFrom(contents)
 
   const {
@@ -96,45 +99,45 @@ const restoreWhitespace = (contents: string) => {
     NEW_LINE_TAG,
     SPACES_TAG,
     SPACES_BEFORE_COLON_TAG,
-    SAME_LINE_ELSE_TAG
+    SAME_LINE_ELSE_TAG,
   } = metadata
 
   if (options.preserveNewLines) {
     contents = contents.replace(
-      new RegExp(`\\/\\*${NEW_LINE_TAG}\\*\\/`, 'g'),
-      ''
+      new RegExp(`\\/\\*${NEW_LINE_TAG}\\*\\/`, "g"),
+      ""
     )
   }
 
   if (options.preserveSpacesBeforeColons) {
     contents = contents.replace(
-      new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/:`, 'g'),
+      new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/:`, "g"),
       (match, group1: string) => {
         const spacesCount = Number(group1)
-        return `${' '.repeat(spacesCount)}:`
+        return `${" ".repeat(spacesCount)}:`
       }
     )
 
     if (options.collapseSpacesBeforeRemovedColons) {
       contents = contents.replace(
         new RegExp(
-          ' ?\\/\\*' +
+          " ?\\/\\*" +
             SPACES_BEFORE_COLON_TAG +
-            '([0-9]+)\\*\\/(?=[,;\\)\\} \\t\\r\\n])',
-          'g'
+            "([0-9]+)\\*\\/(?=[,;\\)\\} \\t\\r\\n])",
+          "g"
         ),
-        ''
+        ""
       )
       contents = contents.replace(
-        new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/`, 'g'),
-        ' '
+        new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/`, "g"),
+        " "
       )
     } else {
       contents = contents.replace(
-        new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/`, 'g'),
+        new RegExp(` ?\\/\\*${SPACES_BEFORE_COLON_TAG}([0-9]+)\\*\\/`, "g"),
         (match, group1: string) => {
           const spacesCount = Number(group1)
-          return ' '.repeat(spacesCount)
+          return " ".repeat(spacesCount)
         }
       )
     }
@@ -142,10 +145,10 @@ const restoreWhitespace = (contents: string) => {
 
   if (options.preserveMultipleSpaces) {
     contents = contents.replace(
-      new RegExp(`\\/\\*${SPACES_TAG}([0-9]+)\\*\\/`, 'g'),
+      new RegExp(`\\/\\*${SPACES_TAG}([0-9]+)\\*\\/`, "g"),
       (match, group1: string) => {
         const spacesCount = Number(group1)
-        return ' '.repeat(spacesCount - 2)
+        return " ".repeat(spacesCount - 2)
       }
     )
   }
@@ -154,11 +157,11 @@ const restoreWhitespace = (contents: string) => {
     return contents.replace(
       new RegExp(
         `\\} \\/\\*${SAME_LINE_ELSE_TAG}([0-9]+)\\*\\/\\r?\\n[ \\t]*else`,
-        'g'
+        "g"
       ),
       (match, group1: string) => {
         const spacesCount = Number(group1)
-        return `}${' '.repeat(spacesCount)}else`
+        return `}${" ".repeat(spacesCount)}else`
       }
     )
   }
@@ -166,10 +169,10 @@ const restoreWhitespace = (contents: string) => {
   return contents
 }
 
-const TAG_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const TAG_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 const createTagForOrdinal = (ordinal: number) => {
-  let tag = ''
+  let tag = ""
   do {
     const tagChar = TAG_CHARS[ordinal % TAG_CHARS.length]
     tag = tagChar + tag
@@ -188,7 +191,7 @@ const isTagWithCountPresent = (fileContents: string, tag: string) => {
   return index !== -1
 }
 
-const PLUGIN_NAME = 'gulp-preserve-typescript-whitespace'
+const PLUGIN_NAME = "gulp-preserve-typescript-whitespace"
 
 class UnusedTagsFinder {
   public checkedSimpleTags: Set<string>
@@ -243,19 +246,19 @@ const options = {
   preserveSpacesBeforeColons: true,
   collapseSpacesBeforeRemovedColons: true,
   preserveSameLineElse: true,
-  showDebugOutput: false
+  showDebugOutput: false,
 }
 
 const rebuildCodeFromBlocks = (blocks: Block[]) => {
-  return blocks.map(block => block.code + block.stringOrComment).join('')
+  return blocks.map(block => block.code + block.stringOrComment).join("")
 }
 
 const stringOrCommentEnd = {
   "'": /(?<!(?:^|[^\\])(?:\\\\)*\\)'/,
   '"': /(?<!(?:^|[^\\])(?:\\\\)*\\)"/,
-  '`': /(?<!(?:^|[^\\])(?:\\\\)*\\)`/,
-  '//': /(?=\r?\n)/,
-  '/*': /\*\//
+  "`": /(?<!(?:^|[^\\])(?:\\\\)*\\)`/,
+  "//": /(?=\r?\n)/,
+  "/*": /\*\//,
 }
 
 const parseStringAndComments = (
@@ -271,8 +274,8 @@ const parseStringAndComments = (
     const commentStartMatch = codeToParse.match(/['"`]|\/\/|\/\*/)
     if (commentStartMatch === null) {
       codeBlock = codeToParse
-      commentBlock = ''
-      codeToParse = ''
+      commentBlock = ""
+      codeToParse = ""
     } else {
       const commentStartIndex = commentStartMatch.index
       codeBlock = codeToParse.slice(0, commentStartIndex)
@@ -285,7 +288,7 @@ const parseStringAndComments = (
         .match(commentEndRegex)
       if (commentEndMatch === null) {
         commentBlock = codeToParse.slice(commentStartIndex)
-        codeToParse = ''
+        codeToParse = ""
       } else {
         const commentEndIndexRelative = commentEndMatch.index
         const commentEndChars = commentEndMatch[0]
@@ -363,13 +366,13 @@ const saveWhitespace = (file: string) => {
     NEW_LINE_TAG,
     SPACES_TAG,
     SPACES_BEFORE_COLON_TAG,
-    SAME_LINE_ELSE_TAG
+    SAME_LINE_ELSE_TAG,
   })
 
   return metadataObj.serialize() + file
 }
 
-export const EXAMPLES_DIRECTORY = '../docs/examples'
+export const EXAMPLES_DIRECTORY = "./examples"
 
 export const tsExtensionRegex = /\.tsx?$/
 
@@ -377,10 +380,10 @@ export const hasTSXExtension = (fileName: string) => /\.tsx$/.test(fileName)
 
 export const getTSConfig = (filePath: string) => {
   const tsconfigPath = lstatSync(filePath).isDirectory()
-    ? path.join(filePath, 'tsconfig.json')
+    ? path.join(filePath, "tsconfig.json")
     : filePath
   const { config } = ts.readConfigFile(tsconfigPath, ts.sys.readFile) as {
-    config: Pick<ts.TranspileOptions, 'compilerOptions'>
+    config: Pick<ts.TranspileOptions, "compilerOptions">
   }
   return config
 }
@@ -396,31 +399,26 @@ export const getTSConfig = (filePath: string) => {
  * @param tsconfigPath - The file path of the tsconfig file.
  */
 const compileTSFile = (filePath: string, tsconfigPath?: string) => {
-  const fileContents = readFileSync(filePath, 'utf8')
+  const fileContents = readFileSync(filePath, "utf8")
   const tsFileName = path.basename(filePath)
   const isTSX = hasTSXExtension(tsFileName)
-  const outputFileExtension = isTSX ? '.jsx' : '.js'
+  const outputFileExtension = isTSX ? ".jsx" : ".js"
   const jsFileName = tsFileName.replace(tsExtensionRegex, outputFileExtension)
   const jsx = isTSX ? ts.JsxEmit.Preserve : ts.JsxEmit.None
 
   const savedWhitespaceContents = saveWhitespace(fileContents)
-  const inputFileDirectory = path.dirname(filePath)
-  const config = getTSConfig(tsconfigPath ?? inputFileDirectory)
+  const config = getTSConfig(tsconfigPath)
   const result = ts.transpileModule(savedWhitespaceContents, {
     compilerOptions: {
       ...config.compilerOptions,
-      jsx
-    }
+      jsx,
+    },
   })
-  const { outDir } = config.compilerOptions
   const tsconfigDirectory = path.dirname(tsconfigPath)
-  const outputFolder = path.join(
-    tsconfigDirectory,
-    outDir,
-    ...inputFileDirectory
-      .split(path.sep)
-      .slice(tsconfigDirectory.split(path.sep).length)
-  )
+  const { outDir } = config.compilerOptions
+  const outputFolder = outDir
+    ? path.join(tsconfigDirectory, outDir)
+    : path.dirname(filePath)
 
   const restoredWhitespaceContents = restoreWhitespace(result.outputText)
   const outputFilePath = path.join(outputFolder, jsFileName)
@@ -428,7 +426,7 @@ const compileTSFile = (filePath: string, tsconfigPath?: string) => {
     mkdirSync(outputFolder)
   }
 
-  writeFileSync(outputFilePath, restoredWhitespaceContents, 'utf8')
+  writeFileSync(outputFilePath, restoredWhitespaceContents, "utf8")
 }
 
 /**
@@ -440,7 +438,10 @@ const compileTSFile = (filePath: string, tsconfigPath?: string) => {
  * @param directory - The directory path where TypeScript files are located.
  * @param tsconfigPath - The file path of the tsconfig file.
  */
-export const compileTSWithWhitespace = (directory: string, tsconfigPath: string) => {
+export const compileTSWithWhitespace = (
+  directory: string,
+  tsconfigPath: string
+) => {
   readdirSync(directory, { withFileTypes: true }).forEach(entry => {
     const filePath = path.join(directory, entry.name)
     if (entry.isDirectory()) {
@@ -452,6 +453,6 @@ export const compileTSWithWhitespace = (directory: string, tsconfigPath: string)
 }
 
 compileTSWithWhitespace(
-  EXAMPLES_DIRECTORY,
-  path.join(EXAMPLES_DIRECTORY, 'tsconfig.json')
+  path.join(__dirname, "..", "examples"),
+  path.join(__dirname, "..", "./tsconfig.json")
 )
