@@ -1,46 +1,46 @@
 name: CI
 on: [push]
 jobs:
-  build:
-    name: Lint, Test, Build & Pack on Node ${{ matrix.node }}
+  # build:
+  #   name: Lint, Test, Build & Pack on Node ${{ matrix.node }}
 
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ["20.x"]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node: ["20.x"]
 
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: checkout repo
+  #       uses: actions/checkout@v4
 
-      - name: Use node ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-          cache: "npm"
+  #     - name: Use node ${{ matrix.node }}
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ matrix.node }}
+  #         cache: "npm"
 
-      - name: Install deps
-        run: npm install
+  #     - name: Install deps
+  #       run: npm install
 
-      # Read existing version, reuse that, add a Git short hash
-      # - name: Set build version to Git commit
-      #   run: node scripts/writeGitVersion.mjs $(git rev-parse --short HEAD)
+  #     # Read existing version, reuse that, add a Git short hash
+  #     # - name: Set build version to Git commit
+  #     #   run: node scripts/writeGitVersion.mjs $(git rev-parse --short HEAD)
 
-      - name: Check updated version
-        run: jq .version package.json
+  #     - name: Check updated version
+  #       run: jq .version package.json
 
-      - name: Pack
-        run: npm pack
+  #     - name: Pack
+  #       run: npm pack
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: package
-          path: ./package.tgz
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: package
+  #         path: ./package.tgz
 
   are-the-types-wrong:
     name: Check package config with are-the-types-wrong
 
-    needs: [build]
+    # needs: [build]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -57,4 +57,4 @@ jobs:
 
       # Note: We currently expect "FalseCJS" failures for Node16 + `moduleResolution: "node16",
       - name: Run are-the-types-wrong
-        run: npx @arethetypeswrong/cli ./package.tgz --format table --ignore-rules false-cjs
+        run: npx @arethetypeswrong/cli --pack . --format table --ignore-rules false-cjs
