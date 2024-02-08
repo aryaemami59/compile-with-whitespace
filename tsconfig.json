@@ -7,20 +7,20 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "target": "ESNext",
-    "types": ["node"],
+    "types": ["node", "vitest/globals", "vitest/importMeta"],
     "baseUrl": ".",
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "exclude": [
     "tsup.config.ts",
     "node_modules",
     "dist",
     "vitest.config.ts",
-    "examples"
+    "examples",
   ],
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS"
-    }
-  }
+      "module": "CommonJS",
+    },
+  },
 }

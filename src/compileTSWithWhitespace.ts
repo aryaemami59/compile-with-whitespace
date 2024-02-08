@@ -443,18 +443,25 @@ export const compileTSWithWhitespace = (
   tsconfigPath: string
 ) => {
   readdirSync(directory, { withFileTypes: true }).forEach(entry => {
-    const filePath = path.join(directory, entry.name)
-    if (entry.isDirectory()) {
-      compileTSWithWhitespace(filePath, tsconfigPath)
-    } else if (tsExtensionRegex.test(entry.name)) {
-      compileTSFile(filePath, tsconfigPath)
+    try {
+      const filePath = path.join(directory, entry.name)
+      if (entry.isDirectory()) {
+        compileTSWithWhitespace(filePath, tsconfigPath)
+      } else if (tsExtensionRegex.test(entry.name)) {
+        compileTSFile(filePath, tsconfigPath)
+      }
+    } catch (error) {
+      console.error("error", error)
+      throw error
     }
   })
 }
 
 const args = process.argv.slice(2)
+const [directory, tsconfigPath] = args
 
-compileTSWithWhitespace(path.resolve(args[1]), path.resolve(args[2]))
+// compileTSWithWhitespace(path.resolve(args[1]), path.resolve(args[2]))
+compileTSWithWhitespace(path.resolve(directory), path.resolve(tsconfigPath))
 // compileTSWithWhitespace(
 //   path.join(__dirname, "..", "examples"),
 //   path.join(__dirname, "..", "./tsconfig.json")

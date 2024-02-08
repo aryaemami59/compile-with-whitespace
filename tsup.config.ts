@@ -7,20 +7,32 @@ export default defineConfig(options => {
     sourcemap: true,
     clean: true,
     dts: true,
+
     ...options,
   }
 
   return [
     {
       ...commonOptions,
-      format: ["esm"],
-      outExtension: () => ({ js: ".mjs" }),
+      format: ["esm", "cjs"],
+      // outExtension: ({ format }) => ({
+      //   js: format === "esm" ? `.mjs` : ".cjs",
+      //   dts: format === "cjs" ? ".d.cts" : ".d.mts",
+      // }),
     },
 
-    {
-      ...commonOptions,
-      format: ["cjs"],
-      outExtension: () => ({ js: ".cjs" }),
-    },
+    // {
+    //   ...commonOptions,
+    //   format: ["cjs"],
+    //   outExtension: () => ({ js: ".cjs" }),
+    // },
+    // {
+    //   entry: ["src/bin/cli.ts"],
+    //   sourcemap: true,
+    //   clean: true,
+    //   dts: true,
+    //   format: ["esm"],
+    //   outExtension: () => ({ js: ".mjs" }),
+    // },
   ]
 })

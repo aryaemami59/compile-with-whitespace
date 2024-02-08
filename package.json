@@ -3,22 +3,22 @@
   "version": "1.0.0",
   "description": "A tool that allows you to compile TypeScript to JavaScript while maintaining whitespace",
   "bin": {
-    "compileTSWithWhitespace": "./dist/index.cjs"
+    "compile-with-whitespace": "./dist/index.js"
   },
   "repository": "https://github.com/aryaemami59/compile-with-whitespace",
   "homepage": "https://github.com/aryaemami59/compile-with-whitespace#readme",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "default": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
       },
       "require": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
     }
@@ -28,10 +28,11 @@
     "dist"
   ],
   "scripts": {
-    "test": "ts-node src/compileExamples.ts examples",
-    "build": "tsup",
-    "start": "npx compileTSWithWhitespace examples tsconfig.json",
-    "clean": "rimraf -g \"examples/**/*.js\" \"examples/dist\""
+    "test": "ts-node src/compileTSWithWhitespace __testfixtures__ tsconfig.json",
+    "build": "npm run clean && tsup",
+    "start": "compileTSWithWhitespace examples tsconfig.json",
+    "clean": "rimraf dist",
+    "clean:test": "rimraf -g \"examples/**/*.js\" \"examples/dist\""
   },
   "keywords": [
     "compile",
@@ -44,18 +45,19 @@
   "author": "Arya Emami <aryaemami59@yahoo.com> (https://github.com/aryaemami59)",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.10.5",
-    "@types/react": "^18.2.45",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@arethetypeswrong/cli": "^0.13.6",
+    "@types/node": "^20.11.16",
+    "@types/react": "^18.2.55",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
-    "prettier": "^3.1.1",
-    "reselect": "^5.0.1",
+    "prettier": "^3.2.5",
+    "reselect": "^5.1.0",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",
-    "vitest": "^1.1.0"
+    "vitest": "^1.2.2"
   },
   "dependencies": {
     "typescript": "^5.3.3"
