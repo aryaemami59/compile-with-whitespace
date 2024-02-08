@@ -30,7 +30,7 @@ jobs:
         run: jq .version package.json
 
       - name: Pack
-        run: npm run pack
+        run: npm pack
 
   are-the-types-wrong:
     name: Check package config with are-the-types-wrong
