@@ -57,4 +57,4 @@ jobs:
 
       # Note: We currently expect "FalseCJS" failures for Node16 + `moduleResolution: "node16",
       - name: Run are-the-types-wrong
-        run: npx @arethetypeswrong/cli --pack ./package.tgz --format table --ignore-rules false-cjs
+        run: npx @arethetypeswrong/cli --pack . --format table --ignore-rules false-cjs
