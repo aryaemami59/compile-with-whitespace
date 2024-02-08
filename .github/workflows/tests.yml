@@ -10,8 +10,8 @@ jobs:
         node: ["20.x"]
 
     steps:
-      - name: checkout repo
-        uses: actions/checkout@v4
+      # - name: checkout repo
+      #   uses: actions/checkout@v4
 
       - name: Use node ${{ matrix.node }}
         uses: actions/setup-node@v4
