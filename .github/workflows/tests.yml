@@ -32,6 +32,11 @@ jobs:
       - name: Pack
         run: npm pack
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: ./package.tgz
+
   are-the-types-wrong:
     name: Check package config with are-the-types-wrong
 
