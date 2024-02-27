@@ -3,7 +3,6 @@ import { defineConfig } from "tsup"
 
 export default defineConfig(options => {
   const commonOptions: Options = {
-    entry: ["src/index.ts"],
     sourcemap: true,
     clean: true,
     dts: true,
@@ -14,6 +13,7 @@ export default defineConfig(options => {
   return [
     {
       ...commonOptions,
+      entry: ["src/index.ts"],
       format: ["esm", "cjs"],
       // outExtension: ({ format }) => ({
       //   js: format === "esm" ? `.mjs` : ".cjs",
@@ -26,13 +26,13 @@ export default defineConfig(options => {
     //   format: ["cjs"],
     //   outExtension: () => ({ js: ".cjs" }),
     // },
-    // {
-    //   entry: ["src/bin/cli.ts"],
-    //   sourcemap: true,
-    //   clean: true,
-    //   dts: true,
-    //   format: ["esm"],
-    //   outExtension: () => ({ js: ".mjs" }),
-    // },
+    {
+      entry: ["src/bin/cli.ts"],
+      sourcemap: true,
+      clean: true,
+      dts: true,
+      format: ["esm", "cjs"],
+      outExtension: ({ format }) => ({ js: format === "esm" ? ".mjs" : ".js" }),
+    },
   ]
 })
