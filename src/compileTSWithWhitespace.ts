@@ -1,11 +1,4 @@
-import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  writeFileSync,
-} from "node:fs"
+import fs from "node:fs/promises"
 import path from "node:path"
 import ts from "typescript"
 
@@ -392,10 +385,9 @@ const tsconfigPath = path.join(__dirname, "..", "examples", "tsconfig.json")
  * configurations and handles the preservation and restoration of whitespaces.
  *
  * @param filePath - The file path of the TypeScript file to compile.
- * @param tsconfigPath - The file path of the tsconfig file.
  */
-const compileTSFile = (filePath: string) => {
-  const fileContents = readFileSync(filePath, "utf8")
+export const compileTSFile = async (filePath: string) => {
+  const fileContents = await fs.readFile(filePath, "utf8")
   const tsFileName = path.basename(filePath)
   const isTSX = hasTSXExtension(tsFileName)
   const outputFileExtension = isTSX ? ".jsx" : ".js"
@@ -429,15 +421,15 @@ const compileTSFile = (filePath: string) => {
 
   const restoredWhitespaceContents = restoreWhitespace(result.outputText)
   const outputFilePath = path.join(outputFolder, jsFileName)
-  if (!existsSync(outputFolder)) {
-    mkdirSync(outputFolder)
+  if (!fs.access(outputFolder)) {
+    await fs.mkdir(outputFolder)
   }
 
   if (restoredWhitespaceContents == null) {
     throw new Error("restoredWhitespaceContents is null")
   }
 
-  writeFileSync(outputFilePath, restoredWhitespaceContents, "utf8")
+  await fs.writeFile(outputFilePath, restoredWhitespaceContents, "utf8")
 }
 
 /**
@@ -446,19 +438,22 @@ const compileTSFile = (filePath: string) => {
  * directory and its subdirectories. It maintains the original whitespace formatting
  * during the compilation process to ensure the output closely mirrors the source format.
  *
- * @param directory - The directory path where TypeScript files are located.
- * @param tsconfigPath - The file path of the tsconfig file.
+ * @param fileOrDirectory - The directory path where TypeScript files are located.
  */
-export const compileTSWithWhitespace = (directory: string) => {
-  const isFile = lstatSync(directory).isFile()
+export const compileTSWithWhitespace = async (fileOrDirectory: string) => {
+  const isFile = (await fs.lstat(fileOrDirectory)).isFile()
   if (isFile) {
-    compileTSFile(directory)
+    compileTSFile(fileOrDirectory)
     return
   }
 
-  readdirSync(directory, { withFileTypes: true }).forEach(entry => {
+  const directoryEntry = await fs.readdir(fileOrDirectory, {
+    withFileTypes: true,
+  })
+
+  directoryEntry.forEach(entry => {
     try {
-      const filePath = path.join(directory, entry.name)
+      const filePath = path.join(fileOrDirectory, entry.name)
       if (entry.isDirectory()) {
         compileTSWithWhitespace(filePath)
       } else if (tsExtensionRegex.test(entry.name)) {
