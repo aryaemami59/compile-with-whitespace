@@ -30,7 +30,7 @@
     "build": "npm run clean && tsup",
     "start": "compileTSWithWhitespace examples tsconfig.json",
     "clean": "rimraf dist",
-    "clean:test": "rimraf -g \"examples/**/*.js\" \"examples/dist\"",
+    "clean:test": "rimraf -g \"examples/**/*.js\" \"examples/**/dist\"",
     "prepack": "npm run build"
   },
   "keywords": [

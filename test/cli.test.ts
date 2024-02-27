@@ -1,5 +1,4 @@
-import child_process from "node:child_process"
-import fs from "node:fs/promises"
+import child_process from "child_process"
 import path from "node:path"
 import { promisify } from "node:util"
 
@@ -11,10 +10,15 @@ const cli = async (args: string[], cwd: string = process.cwd()) => {
 
 describe("cli", () => {
   beforeAll(async () => {
+    await exec(`npm run clean:test`)
     await exec(`npm run build`)
   })
 
-  test("should", async () => {
+  beforeEach(async () => {
+    await exec(`npm run clean:test`)
+  })
+
+  test("should work on a single file", async () => {
     const inputFilePath = path.join(
       import.meta.dirname,
       "..",
@@ -22,8 +26,18 @@ describe("cli", () => {
       "basicUsage.ts"
     )
 
-    const inputFile = await fs.readFile(inputFilePath, "utf8")
+    // console.log(inputFilePath)
 
-    await cli([inputFilePath])
+    // const inputFile = await fs.readFile(inputFilePath, "utf8")
+    // console.log(inputFile)
+
+    const out = await cli([inputFilePath])
+    // console.log(out.stdout)
+  })
+
+  test("should work on a directory", async () => {
+    const inputDirPath = path.join(import.meta.dirname, "..", "examples")
+    const out = await cli([inputDirPath])
+    console.log(out.stdout)
   })
 })

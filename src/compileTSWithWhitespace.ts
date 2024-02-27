@@ -369,13 +369,9 @@ const saveWhitespace = (file: string) => {
   return metadataObj.serialize() + file
 }
 
-export const EXAMPLES_DIRECTORY = "./examples"
-
 export const tsExtensionRegex = /\.tsx?$/
 
 export const hasTSXExtension = (fileName: string) => /\.tsx$/.test(fileName)
-
-const tsconfigPath = path.join(__dirname, "..", "examples", "tsconfig.json")
 
 /**
  * Compiles a single TypeScript file to JavaScript, preserving whitespaces.
@@ -386,7 +382,10 @@ const tsconfigPath = path.join(__dirname, "..", "examples", "tsconfig.json")
  *
  * @param filePath - The file path of the TypeScript file to compile.
  */
-export const compileTSFile = async (filePath: string) => {
+export const compileTSFile = async (
+  filePath: string,
+  options: { root?: string } = {}
+) => {
   const fileContents = await fs.readFile(filePath, "utf8")
   const tsFileName = path.basename(filePath)
   const isTSX = hasTSXExtension(tsFileName)
@@ -413,23 +412,30 @@ export const compileTSFile = async (filePath: string) => {
       jsx,
     },
   })
-  const tsconfigDirectory = path.dirname(tsconfigPath)
   const { outDir } = config.compilerOptions
   const outputFolder = outDir
-    ? path.join(tsconfigDirectory, outDir)
+    ? path.join(options.root ?? path.dirname(filePath), outDir)
     : path.dirname(filePath)
 
   const restoredWhitespaceContents = restoreWhitespace(result.outputText)
   const outputFilePath = path.join(outputFolder, jsFileName)
-  if (!fs.access(outputFolder)) {
-    await fs.mkdir(outputFolder)
+
+  console.log(`Generating ${outputFilePath}`)
+
+  try {
+    await fs.access(outputFolder)
+  } catch (err) {
+    console.error(err)
+    await fs.mkdir(outputFolder, { recursive: true })
   }
 
   if (restoredWhitespaceContents == null) {
     throw new Error("restoredWhitespaceContents is null")
   }
 
-  await fs.writeFile(outputFilePath, restoredWhitespaceContents, "utf8")
+  await fs.writeFile(outputFilePath, restoredWhitespaceContents, {
+    encoding: "utf8",
+  })
 }
 
 /**
@@ -440,10 +446,13 @@ export const compileTSFile = async (filePath: string) => {
  *
  * @param fileOrDirectory - The directory path where TypeScript files are located.
  */
-export const compileTSWithWhitespace = async (fileOrDirectory: string) => {
+export const compileTSWithWhitespace = async (
+  fileOrDirectory: string,
+  options: { root?: string } = {}
+) => {
   const isFile = (await fs.lstat(fileOrDirectory)).isFile()
   if (isFile) {
-    compileTSFile(fileOrDirectory)
+    await compileTSFile(fileOrDirectory, options)
     return
   }
 
@@ -451,13 +460,13 @@ export const compileTSWithWhitespace = async (fileOrDirectory: string) => {
     withFileTypes: true,
   })
 
-  directoryEntry.forEach(entry => {
+  directoryEntry.forEach(async entry => {
     try {
       const filePath = path.join(fileOrDirectory, entry.name)
       if (entry.isDirectory()) {
-        compileTSWithWhitespace(filePath)
+        await compileTSWithWhitespace(filePath)
       } else if (tsExtensionRegex.test(entry.name)) {
-        compileTSFile(filePath)
+        await compileTSFile(filePath, options)
       }
     } catch (error) {
       console.error("error", error)
