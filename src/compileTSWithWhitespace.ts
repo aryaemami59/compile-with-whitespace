@@ -65,7 +65,7 @@ class ParsedFileMetadata {
       return
     }
 
-    const startTagIndex = metadataMatch.index
+    const startTagIndex = metadataMatch.index ?? 0
     const metadataWithTags = metadataMatch[0]
     const serializedMetadata = metadataMatch[1]
 
@@ -87,6 +87,10 @@ class ParsedFileMetadata {
 
 const restoreWhitespace = (contents: string) => {
   const metadataObj = ParsedFileMetadata.deserialize(contents)
+
+  if (metadataObj == null || !("metadata" in metadataObj)) {
+    return
+  }
 
   const { metadata } = metadataObj
   if (metadata == null) {
@@ -253,7 +257,7 @@ const rebuildCodeFromBlocks = (blocks: Block[]) => {
   return blocks.map(block => block.code + block.stringOrComment).join("")
 }
 
-const stringOrCommentEnd = {
+const stringOrCommentEnd: Record<string, RegExp> = {
   "'": /(?<!(?:^|[^\\])(?:\\\\)*\\)'/,
   '"': /(?<!(?:^|[^\\])(?:\\\\)*\\)"/,
   "`": /(?<!(?:^|[^\\])(?:\\\\)*\\)`/,
@@ -277,7 +281,7 @@ const parseStringAndComments = (
       commentBlock = ""
       codeToParse = ""
     } else {
-      const commentStartIndex = commentStartMatch.index
+      const commentStartIndex = commentStartMatch.index ?? 0
       codeBlock = codeToParse.slice(0, commentStartIndex)
 
       const commentStartChars = commentStartMatch[0]
@@ -290,7 +294,7 @@ const parseStringAndComments = (
         commentBlock = codeToParse.slice(commentStartIndex)
         codeToParse = ""
       } else {
-        const commentEndIndexRelative = commentEndMatch.index
+        const commentEndIndexRelative = commentEndMatch.index ?? 0
         const commentEndChars = commentEndMatch[0]
         const nextCodeStartIndex =
           commentContentsIndex +
@@ -378,15 +382,7 @@ export const tsExtensionRegex = /\.tsx?$/
 
 export const hasTSXExtension = (fileName: string) => /\.tsx$/.test(fileName)
 
-export const getTSConfig = (filePath: string) => {
-  const tsconfigPath = lstatSync(filePath).isDirectory()
-    ? path.join(filePath, "tsconfig.json")
-    : filePath
-  const { config } = ts.readConfigFile(tsconfigPath, ts.sys.readFile) as {
-    config: Pick<ts.TranspileOptions, "compilerOptions">
-  }
-  return config
-}
+const tsconfigPath = path.join(__dirname, "..", "examples", "tsconfig.json")
 
 /**
  * Compiles a single TypeScript file to JavaScript, preserving whitespaces.
@@ -398,7 +394,7 @@ export const getTSConfig = (filePath: string) => {
  * @param filePath - The file path of the TypeScript file to compile.
  * @param tsconfigPath - The file path of the tsconfig file.
  */
-const compileTSFile = (filePath: string, tsconfigPath?: string) => {
+const compileTSFile = (filePath: string) => {
   const fileContents = readFileSync(filePath, "utf8")
   const tsFileName = path.basename(filePath)
   const isTSX = hasTSXExtension(tsFileName)
@@ -407,7 +403,18 @@ const compileTSFile = (filePath: string, tsconfigPath?: string) => {
   const jsx = isTSX ? ts.JsxEmit.Preserve : ts.JsxEmit.None
 
   const savedWhitespaceContents = saveWhitespace(fileContents)
-  const config = getTSConfig(tsconfigPath)
+  const config = {
+    compilerOptions: {
+      allowSyntheticDefaultImports: true,
+      esModuleInterop: true,
+      isolatedModules: true,
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.Node10,
+      outDir: "dist",
+      jsx,
+    },
+  }
   const result = ts.transpileModule(savedWhitespaceContents, {
     compilerOptions: {
       ...config.compilerOptions,
@@ -426,6 +433,10 @@ const compileTSFile = (filePath: string, tsconfigPath?: string) => {
     mkdirSync(outputFolder)
   }
 
+  if (restoredWhitespaceContents == null) {
+    throw new Error("restoredWhitespaceContents is null")
+  }
+
   writeFileSync(outputFilePath, restoredWhitespaceContents, "utf8")
 }
 
@@ -438,17 +449,20 @@ const compileTSFile = (filePath: string, tsconfigPath?: string) => {
  * @param directory - The directory path where TypeScript files are located.
  * @param tsconfigPath - The file path of the tsconfig file.
  */
-export const compileTSWithWhitespace = (
-  directory: string,
-  tsconfigPath: string
-) => {
+export const compileTSWithWhitespace = (directory: string) => {
+  const isFile = lstatSync(directory).isFile()
+  if (isFile) {
+    compileTSFile(directory)
+    return
+  }
+
   readdirSync(directory, { withFileTypes: true }).forEach(entry => {
     try {
       const filePath = path.join(directory, entry.name)
       if (entry.isDirectory()) {
-        compileTSWithWhitespace(filePath, tsconfigPath)
+        compileTSWithWhitespace(filePath)
       } else if (tsExtensionRegex.test(entry.name)) {
-        compileTSFile(filePath, tsconfigPath)
+        compileTSFile(filePath)
       }
     } catch (error) {
       console.error("error", error)
@@ -456,13 +470,3 @@ export const compileTSWithWhitespace = (
     }
   })
 }
-
-const args = process.argv.slice(2)
-const [directory, tsconfigPath] = args
-
-// compileTSWithWhitespace(path.resolve(args[1]), path.resolve(args[2]))
-compileTSWithWhitespace(path.resolve(directory), path.resolve(tsconfigPath))
-// compileTSWithWhitespace(
-//   path.join(__dirname, "..", "examples"),
-//   path.join(__dirname, "..", "./tsconfig.json")
-// )
