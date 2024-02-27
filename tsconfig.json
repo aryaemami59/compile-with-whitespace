@@ -1,26 +1,31 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": false,
     "esModuleInterop": true,
+    "importHelpers": true,
     "jsx": "preserve",
     "lib": ["DOM"],
-    "moduleResolution": "Bundler",
     "module": "ESNext",
-    "target": "ESNext",
-    "types": ["node", "vitest/globals", "vitest/importMeta"],
-    "baseUrl": ".",
+    "moduleResolution": "Node10",
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "types": ["vitest/globals", "vitest/importMeta"]
   },
   "exclude": [
     "tsup.config.ts",
     "node_modules",
     "dist",
     "vitest.config.ts",
-    "examples",
+    "examples"
   ],
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS",
-    },
-  },
+      "module": "CommonJS"
+    }
+  }
 }
