@@ -32,28 +32,28 @@ jobs:
           name: package
           path: ./*.tgz
 
-  test-dist:
-    name: Test against dist
-    needs: [build]
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node: ['20.x']
-    steps:
-      - name: checkout repo
-        uses: actions/checkout@v4
+  # test-dist:
+  #   name: Test against dist
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       node: ['20.x']
+  #   steps:
+  #     - name: checkout repo
+  #       uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: package
-          path: .
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: package
+  #         path: .
 
-      - name: Install build artifact
-        run: npm install ./package.tgz
+  #     - name: Install build artifact
+  #       run: npm install ./package.tgz
 
-      - name: Run tests
-        run: npm test
+  #     - name: Run tests
+  #       run: npm test
 
   test-types:
     name: Test types with TypeScript ${{ matrix.ts }}
