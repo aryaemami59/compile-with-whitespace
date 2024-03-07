@@ -30,7 +30,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: package
-          path: ./package.tgz
+          path: ./*.tgz
 
   test-dist:
     name: Test against dist
