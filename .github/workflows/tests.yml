@@ -79,20 +79,20 @@ jobs:
         run: npm install
 
       - name: Install TypeScript ${{ matrix.ts }}
-        run: npm install typescript@~${{ matrix.ts }}
+        run: npm install --dev typescript@${{ matrix.ts }}
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: package
-          path: .
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: package
+      #     path: .
 
-      - name: Install build artifact
-        run: npm install ./package.tgz
+      # - name: Install build artifact
+      #   run: npm install ./package.tgz
 
       - name: Test types
         run: |
           npx tsc --version
-          npm run test:types
+          npm run test-types
 
   are-the-types-wrong:
     name: Check package config with are-the-types-wrong
