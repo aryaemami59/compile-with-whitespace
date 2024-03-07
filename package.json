@@ -2,7 +2,10 @@
   "name": "compile-with-whitespace",
   "version": "1.0.0",
   "description": "A tool that allows you to compile TypeScript to JavaScript while maintaining whitespace",
-  "bin": "./dist/cli.mjs",
+  "bin": {
+    "compile-with-whitespace": "./dist/cli.mjs",
+    "cws": "./dist/cli.mjs"
+  },
   "repository": "https://github.com/aryaemami59/compile-with-whitespace",
   "homepage": "https://github.com/aryaemami59/compile-with-whitespace#readme",
   "main": "./dist/index.js",
@@ -12,10 +15,14 @@
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "default": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "node": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
@@ -44,14 +51,14 @@
   "author": "Arya Emami <aryaemami59@yahoo.com> (https://github.com/aryaemami59)",
   "license": "ISC",
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.14.1",
-    "@types/node": "^20.11.20",
-    "@types/react": "^18.2.60",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@typescript-eslint/parser": "^7.1.0",
+    "@arethetypeswrong/cli": "^0.15.0",
+    "@types/node": "^20.11.25",
+    "@types/react": "^18.2.64",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
     "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.33.2",
-    "prettier": "^3.2.5",
+    "eslint-plugin-react": "^7.34.0",
+    "jest-extended": "^4.0.2",
     "reselect": "^5.1.0",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
@@ -60,6 +67,7 @@
   },
   "dependencies": {
     "commander": "^12.0.0",
-    "typescript": "^5.3.3"
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
   }
 }
