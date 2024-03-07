@@ -10,7 +10,7 @@
     "importHelpers": true,
     "isolatedModules": true,
     "module": "ESNext",
-    "moduleResolution": "Node10",
+    "moduleResolution": "Node",
     "noEmit": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
