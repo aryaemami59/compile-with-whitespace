@@ -3,34 +3,34 @@ name: CI
 on: [push]
 
 jobs:
-  # build:
-  #   name: Lint, Test, Build & Pack on Node ${{ matrix.node }}
+  build:
+    name: Lint, Test, Build & Pack on Node ${{ matrix.node }}
 
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node: ['20.x']
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['20.x']
 
-  #   steps:
-  #     - name: checkout repo
-  #       uses: actions/checkout@v4
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
 
-  #     - name: Use node ${{ matrix.node }}
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: ${{ matrix.node }}
-  #         # cache: 'npm'
+      - name: Use node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          # cache: 'npm'
 
-  #     - name: Install deps
-  #       run: npm install
+      - name: Install deps
+        run: npm install
 
-  #     - name: Pack
-  #       run: npm pack
+      - name: Pack
+        run: npm pack
 
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: package
-  #         path: ./*.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: ./*.tgz
 
   # test-dist:
   #   name: Test against dist
@@ -97,7 +97,7 @@ jobs:
   are-the-types-wrong:
     name: Check package config with are-the-types-wrong
 
-    # needs: [build]
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -111,7 +111,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          # cache: 'npm'
+          cache: 'npm'
 
       - name: Install deps
         run: npm install
