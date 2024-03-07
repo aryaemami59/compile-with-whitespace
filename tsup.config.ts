@@ -6,6 +6,7 @@ export default defineConfig(options => {
   const commonOptions: Options = {
     sourcemap: true,
     clean: true,
+    format: ['cjs', 'esm'],
     tsconfig: resolve('tsconfig.build.json'),
     ...options,
   }
