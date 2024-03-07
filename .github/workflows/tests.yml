@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: package
+          name: package-${{ matrix.node }}
           path: ./*.tgz
 
   # test-dist:
@@ -118,7 +118,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: package
+          name: package-${{ matrix.node }}
           path: .
 
       - name: Run are-the-types-wrong
