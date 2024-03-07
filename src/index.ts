@@ -1,1 +1,5 @@
-export { compileTSWithWhitespace } from "./compileTSWithWhitespace"
+export {
+  compileTSFile,
+  compileTSWithWhitespace,
+  saveWhitespace,
+} from "./compileTSWithWhitespace"
