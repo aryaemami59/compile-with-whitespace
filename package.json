@@ -33,7 +33,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --typecheck",
     "build": "npm run clean && tsup",
     "start": "compileTSWithWhitespace examples tsconfig.json",
     "clean": "rimraf dist",
